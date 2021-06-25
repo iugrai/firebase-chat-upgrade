@@ -21,7 +21,7 @@ function displayMessage(message) {
     <i class="fas fa-user"></i>
     <div>
       <span class="username">${message.username}
-        <time>20:12 PM</time>
+        <time>${(message.date.toDate()).toLocaleString('hu-HU')}</time>
       </span>
       <br>
       <span class="message-text">
@@ -40,7 +40,6 @@ function displayMessage(message) {
     block: 'end'
   });
 }
-
 
 function createMessage() {
   const message = document.querySelector('#message').value;
