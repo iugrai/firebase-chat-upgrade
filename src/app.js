@@ -15,9 +15,9 @@ async function sendMessage(data) {
   console.log(res);
 }
 
-function displayMessage(message) {
+function displayMessage(message, id) {
   const messageDOM = `
-  <div class="message">
+  <div class="message" data-id="${id}">
     <i class="fas fa-user"></i>
     <div>
       <span class="username">${message.username}
@@ -39,8 +39,17 @@ function displayMessage(message) {
     scrollMode: 'if-needed',
     block: 'end'
   });
+  document.querySelector(`[data-id="${id}"] .fa-trash-alt`).addEventListener('click', () => {
+    deleteMessage(id);
+    removeMessage(id);
+  });
 }
-
+function deleteMessage(id) {
+  db.collection("messages").doc(id).delete();
+}
+function removeMessage(id) {
+  document.querySelector(`[data-id="${id}"]`).remove();
+}
 function createMessage() {
   const message = document.querySelector('#message').value;
   const username = document.querySelector('#nickname').value;
@@ -84,13 +93,14 @@ db.collection("messages").orderBy('date', 'asc')
   .onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
       if (change.type === 'added') {
-        displayMessage(change.doc.data());
+        displayMessage(change.doc.data(), change.doc.id);
       }
       if (change.type === 'modified') {
         console.log('Modified message: ', change.doc.data());
       }
       if (change.type === "removed") {
         console.log("Removed message: ", change.doc.data());
+        removeMessage(change.doc.id);
       }
     });
   });
